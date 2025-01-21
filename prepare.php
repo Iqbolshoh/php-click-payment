@@ -81,6 +81,7 @@ if (!$merchant_trans_id) {
         'amount' => $amount,
         'time' => date('Y-m-d H:i:s', time()),
         'click_trans_id' => $click_trans_id,
+        'merchant_trans_id' => $merchant_trans_id,
         'status' => 'unpay'
     ];
 
