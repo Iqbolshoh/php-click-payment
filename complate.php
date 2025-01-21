@@ -1,5 +1,8 @@
 <?php
 
+include 'config.php';
+$query = new Database();
+
 error_reporting(0);
 header('Content-Type: text/json');
 header('Charset: UTF-8');

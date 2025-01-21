@@ -103,9 +103,4 @@ class Database
 
         return $this->conn->affected_rows;
     }
-
-    public function hashPassword($password)
-    {
-        return hash_hmac('sha256', $password, 'iqbolshoh');
-    }
 }
