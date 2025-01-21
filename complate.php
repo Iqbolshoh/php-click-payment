@@ -112,7 +112,7 @@ if (!$prepared) {
         } else {
             // Insertion failed
         }
-        
+
         // Retrieve the payment record to get the log_id
         $sql = mysqli_query($link, "SELECT * from tulovlar WHERE telefon='$telefon' order by id desc");
         $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
