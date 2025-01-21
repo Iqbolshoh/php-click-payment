@@ -93,7 +93,6 @@ if (!$prepared) {
 
     // Insert payment record into the database using the Database class
     $payment_data = [
-        'user_id' => $user,
         'amount' => $amount,
         'time' => date('Y-m-d H:i:s', $time),
         'click_trans_id' => $trans_id,
