@@ -10,10 +10,10 @@ header('Charset: UTF-8');
 $request = $_POST;
 
 // Merchant information
-$merchant_id = 'SIZNING_MERCHANT_ID';
-$service_id = 'SIZNING_SERVICE_ID';
-$merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
-$secret_key = 'SIZNING_SECRET_KEY';
+$merchant_id = 'YOUR_MERCHANT_ID';
+$service_id = 'YOUR_SERVICE_ID';
+$merchant_user_id = 'YOUR_MERCHANT_USER_ID';
+$secret_key = 'YOUR_SECRET_KEY';
 
 // Check if all required parameters are present
 if (

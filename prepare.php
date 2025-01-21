@@ -1,24 +1,19 @@
 <?php
 
-// Include the database configuration
 include 'config.php';
 $query = new Database();
 
-// Disable errors
 error_reporting(0);
-
-// Set the response format and charset
 header('Content-Type: text/json');
 header('Charset: UTF-8');
 
-// Get the incoming POST request data
 $request = $_POST;
 
 // Merchant information
-$merchant_id = 'SIZNING_MERCHANT_ID';
-$service_id = 'SIZNING_SERVICE_ID';
-$merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
-$secret_key = 'SIZNING_SECRET_KEY';
+$merchant_id = 'YOUR_MERCHANT_ID';
+$service_id = 'YOUR_SERVICE_ID';
+$merchant_user_id = 'YOUR_MERCHANT_USER_ID';
+$secret_key = 'YOUR_SECRET_KEY';
 
 // Check if all required parameters are present
 if (
