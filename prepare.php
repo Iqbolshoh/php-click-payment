@@ -73,7 +73,6 @@ if (!$user) {
     ));
     exit;
 } else {
-    $url = "MANZIL";
     $host = "HOST";
     $user_d = "USER";
     $password = "PAROL";
@@ -85,7 +84,7 @@ if (!$user) {
         exit();
     } else {
         // Retrieve temporary user information from the database
-        $sql = mysqli_query($link, "SELECT * from user_temp WHERE telefon='$user' order by id desc");
+        $sql = mysqli_query($link, "SELECT * FROM user_temp WHERE telefon='$user' ORDER BY id DESC");
         $row = mysqli_fetch_array($sql, MYSQLI_BOTH);
         $name = $row['ism'];
         $telefon = $user;
@@ -94,19 +93,18 @@ if (!$user) {
         $faoliyat = $row['faoliyat'];
         $rol = "user";
 
-        // Insert user information into the 'user' table
-        $sql = mysqli_query($link, "INSERT INTO user (ism, login, telefon, parol, faoliyat, rol) VALUES ('$name', '$login', '$telefon', '$parol', '$faoliyat', '$rol')");
+        // Insert user information into the 'users' table
+        $sql = mysqli_query($link, "INSERT INTO users (full_name, username, password) 
+            VALUES ('$name', '$login', '$parol')");
 
         // Retrieve the inserted user data to get the user ID (log_id)
-        $sql = mysqli_query($link, "SELECT * from user WHERE telefon='$telefon' order by id desc");
+        $sql = mysqli_query($link, "SELECT * FROM users WHERE username='$login' ORDER BY id DESC");
         $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
         $log_id = $data['id'];
     }
 }
 
 // If all checks pass successfully, we save the successful preparation for payment in the database
-// Optionally, you can create a separate table to log incoming data and assign the merchant_prepare_id to the log number
-
 echo json_encode(array(
     'error' => 0,
     'error_note' => 'Success',
@@ -114,5 +112,6 @@ echo json_encode(array(
     'merchant_trans_id' => $request['merchant_trans_id'],
     'merchant_prepare_id' => $log_id,
 ));
+
 exit;
 ?>
