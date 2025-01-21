@@ -11,7 +11,7 @@ $service_id = 'SIZNING_SERVICE_ID';
 $merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
 $secret_key = 'SIZNING_SECRET_KEY';
 
-// Проверка отправлено-ли все параметры
+// Check if all parameters are sent in the request
 if (
     !(
         isset($request['click_trans_id']) &&
@@ -33,7 +33,7 @@ if (
     exit;
 }
 
-// Проверка хеша
+// Check hash string
 $sign_string = md5(
     $request['click_trans_id'] .
     $request['service_id'] .
@@ -44,7 +44,7 @@ $sign_string = md5(
     $request['sign_time']
 );
 
-// check sign string to possible
+// Validate the sign string to check its authenticity
 if ($sign_string != $request['sign_string']) {
     echo json_encode(array(
         'error' => -1,
@@ -53,6 +53,7 @@ if ($sign_string != $request['sign_string']) {
     exit;
 }
 
+// Check the action field to ensure it is correct
 if ((int) $request['action'] != 0) {
     echo json_encode(array(
         'error' => -3,
@@ -61,8 +62,8 @@ if ((int) $request['action'] != 0) {
     exit;
 }
 
-// merchant_trans_id - это ID пользователья который он ввел в приложении
-// Здесь нужно проверить если у нас в базе пользователь с таким ID
+// merchant_trans_id - This is the user ID that they entered in the app
+// Here, we need to check if we have a user with this ID in our database
 
 $user = $request['merchant_trans_id'];
 if (!$user) {
@@ -78,9 +79,12 @@ if (!$user) {
     $password = "PAROL";
     $db = "DATA_BASE_NAME";
     $link = mysqli_connect($host, $user_d, $password, $db);
+
+    // Check if the database connection was successful
     if (!$link) {
         exit();
     } else {
+        // Retrieve temporary user information from the database
         $sql = mysqli_query($link, "SELECT * from user_temp WHERE telefon='$user' order by id desc");
         $row = mysqli_fetch_array($sql, MYSQLI_BOTH);
         $name = $row['ism'];
@@ -90,16 +94,18 @@ if (!$user) {
         $faoliyat = $row['faoliyat'];
         $rol = "user";
 
-        $sql = mysqli_query($link, "INSERT INTO user (ism,login,telefon,parol,faoliyat,rol) VALUES ('$name','$login','$telefon','$parol','$faoliyat','$rol')");
+        // Insert user information into the 'user' table
+        $sql = mysqli_query($link, "INSERT INTO user (ism, login, telefon, parol, faoliyat, rol) VALUES ('$name', '$login', '$telefon', '$parol', '$faoliyat', '$rol')");
+
+        // Retrieve the inserted user data to get the user ID (log_id)
         $sql = mysqli_query($link, "SELECT * from user WHERE telefon='$telefon' order by id desc");
         $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
         $log_id = $data['id'];
     }
 }
 
-// Все проверки прошли успешно, тог здесь будем сохранять в базу что подготовка к оплате успешно прошла
-// можно сделать отдельную таблицу чтобы сохранить входящих данных как лог
-// и присвоит на параметр merchant_prepare_id номер лога
+// If all checks pass successfully, we save the successful preparation for payment in the database
+// Optionally, you can create a separate table to log incoming data and assign the merchant_prepare_id to the log number
 
 echo json_encode(array(
     'error' => 0,
