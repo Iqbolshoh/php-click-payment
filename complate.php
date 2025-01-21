@@ -85,18 +85,24 @@ if (is_array($user_data) && count($user_data) > 0) {
     $login = $row['login'];
     $password = $row['password'];
 
-    // Foydalanuvchini asosiysi jadvalga qo'shish
+    // Foydalanuvchining ma'lumotlarini asosiysi jadvalga qo'shish
     $data = [
         'full_name' => $name,
-        'login' => $login,
         'username' => $username,
         'password' => $password,
         'role' => 'user'
     ];
+
     $user_id = $database->insert("users", $data);
 
     $data = $database->select('users', '*', "username = ?", [$username], "s");
     $log_id = $data[0]['id'];
+} else {
+    echo json_encode(array(
+        'error' => -5,
+        'error_note' => 'Foydalanuvchi topilmadi'
+    ));
+    exit;
 }
 
 // Natijani JSON formatida qaytarish
