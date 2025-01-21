@@ -1,23 +1,28 @@
 <?php
 
+// Include the database configuration
 include 'config.php';
 $query = new Database();
 
+// Disable errors
 error_reporting(0);
+
+// Set the response format and charset
 header('Content-Type: text/json');
 header('Charset: UTF-8');
 
+// Get the incoming POST request data
 $request = $_POST;
 
+// Merchant information
 $merchant_id = 'SIZNING_MERCHANT_ID';
 $service_id = 'SIZNING_SERVICE_ID';
 $merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
 $secret_key = 'SIZNING_SECRET_KEY';
 
-// Check if all parameters are sent in the request
+// Check if all required parameters are present
 if (
-    !(
-        isset($request['click_trans_id']) &&
+    !(isset($request['click_trans_id']) &&
         isset($request['service_id']) &&
         isset($request['merchant_trans_id']) &&
         isset($request['amount']) &&
@@ -26,17 +31,17 @@ if (
         isset($request['error_note']) &&
         isset($request['sign_time']) &&
         isset($request['sign_string']) &&
-        isset($request['click_paydoc_id'])
-    )
+        isset($request['click_paydoc_id']))
 ) {
+    // Error in the request from Click
     echo json_encode(array(
         'error' => -8,
-        'error_note' => 'Error in request from click'
+        'error_note' => 'Error in request from Click'
     ));
     exit;
 }
 
-// Check hash string
+// Check hash for data authenticity
 $sign_string = md5(
     $request['click_trans_id'] .
     $request['service_id'] .
@@ -56,7 +61,7 @@ if ($sign_string != $request['sign_string']) {
     exit;
 }
 
-// Check the action field to ensure it is correct
+// Check the action field to ensure it is correct (action = 0 means prepare)
 if ((int) $request['action'] != 0) {
     echo json_encode(array(
         'error' => -3,
@@ -66,7 +71,7 @@ if ((int) $request['action'] != 0) {
 }
 
 // merchant_trans_id - This is the merchant_trans_id ID that they entered in the app
-// Here, we need to check if we have a merchant_trans_id with this ID in our database
+// Check if the merchant_trans_id exists in the users table
 
 $merchant_trans_id = $request['merchant_trans_id'];
 if (!$merchant_trans_id) {
@@ -76,32 +81,36 @@ if (!$merchant_trans_id) {
     ));
     exit;
 } else {
-    // Retrieve temporary user information from the database using the select() method
+    // Retrieve user information from the database using the select() method
     $user_data = $query->select('users', '*', 'username = ?', [$merchant_trans_id], 's');
     if (empty($user_data)) {
         echo json_encode(array(
             'error' => -5,
-            'error_note' => 'User does not exist in temporary users'
+            'error_note' => 'User does not exist in users table'
         ));
         exit;
     }
     $user_data = $user_data[0];
 
-    $full_name = $user_data[0]['ism'];
-    $username = $user_data[0]['login'];
-    $parol = $user_data[0]['parol'];
+    $full_name = $user_data['ism'];
+    $username = $user_data['login'];
+    $password = $user_data['parol'];
 
-    $user_insert_data = [
-        'full_name' => $name,
-        'username' => $username,
-        'password' => $parol
+    // Insert payment preparation data into the payments table
+    $payment_data = [
+        'amount' => $request['amount'],
+        'time' => date('Y-m-d H:i:s', time()),
+        'click_trans_id' => $request['click_trans_id'],
+        'status' => 'unpay'
     ];
-    $log_id = $query->insert('users', $user_insert_data);
+
+    // Insert into the payments table and get the log_id
+    $log_id = $query->insert('payments', $payment_data);
 
     if (!$log_id) {
         echo json_encode(array(
             'error' => -9,
-            'error_note' => 'Failed to insert user into the users table'
+            'error_note' => 'Failed to insert payment into the payments table'
         ));
         exit;
     }
