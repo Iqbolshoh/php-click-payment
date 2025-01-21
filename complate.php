@@ -1,5 +1,7 @@
 <?php
 
+require_once 'config.php';
+
 error_reporting(0);
 header('Content-Type: text/json');
 header('Charset: UTF-8');
@@ -11,7 +13,7 @@ $service_id = 'SIZNING_SERVICE_ID';
 $merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
 $secret_key = 'SIZNING_SECRET_KEY';
 
-// So'rovda barcha parametrlar borligini tekshirish
+// So'rovda barcha parametrlar mavjudligini tekshirish
 if (
     !(
         isset($request['click_trans_id']) &&
@@ -26,117 +28,85 @@ if (
         isset($request['click_paydoc_id'])
     )
 ) {
-
     echo json_encode(array(
         'error' => -8,
-        'error_note' => 'Clickdan so\'rovda xato'
+        'error_note' => 'Clickdan so\'rovda xato mavjud'
     ));
-
     exit;
 }
 
-// Xeshni tekshirish
-$sign_string = md5(
-    $request['click_trans_id'] .
+$database = new Database();
+
+// Xeshni tekshirish (so'rovning xavfsizligini tasdiqlash)
+$sign = $request['click_trans_id'] .
     $request['service_id'] .
     $secret_key .
     $request['merchant_trans_id'] .
-    $request['merchant_prepare_id'] .
     $request['amount'] .
     $request['action'] .
-    $request['sign_time']
-);
+    $request['sign_time'];
 
-// Agar xesh noto'g'ri bo'lsa
+$sign_string = md5($sign);
+
+// Xeshni tekshirish
 if ($sign_string != $request['sign_string']) {
-
     echo json_encode(array(
         'error' => -1,
-        'error_note' => 'XESH TEKSHIRUVIDA XATO!'
+        'error_note' => 'XESH TEKSHIRUVI XATO!'
     ));
-
     exit;
 }
 
-// Agar action parametrining qiymati 1 bo'lmasa
-if ((int) $request['action'] != 1) {
-
+// Action parametrini tekshirish
+if ((int) $request['action'] != 0) {
     echo json_encode(array(
         'error' => -3,
         'error_note' => 'Action topilmadi'
     ));
-
     exit;
 }
 
-// merchant_trans_id foydalanuvchi tomonidan kiritilgan ID
+// Merchant_trans_id bo'yicha foydalanuvchini tekshirish
 $user = $request['merchant_trans_id'];
 if (!$user) {
     echo json_encode(array(
         'error' => -5,
-        'error_note' => 'Foydalanuvchi mavjud emas'
+        'error_note' => 'Foydalanuvchi topilmadi'
     ));
-
     exit;
 }
 
-// merchant_prepare_id - transactionning IDsi
-$prepared = $request['merchant_prepare_id'];
+$user_data = $database->select("users", "*", "phone = ?", [$user], "s");
 
-if (!$prepared) {
-    echo json_encode(array(
-        'error' => -6,
-        'error_note' => 'Transaction mavjud emas'
-    ));
+if (is_array($user_data) && count($user_data) > 0) {
+    $row = $user_data[0];
+    $name = $row['full_name'];
+    $phone = $user;
+    $login = $row['login'];
+    $password = $row['password'];
 
-    exit;
-} else {
-    // So'rovda yuborilgan summa va boshqa ma'lumotlar
-    $summa = $request['amount'];
-    $vaqt = time();
-    $trans_id = $request['click_trans_id'];
+    // Foydalanuvchini asosiysi jadvalga qo'shish
+    $data = [
+        'full_name' => $name,
+        'login' => $login,
+        'phone' => $phone,
+        'password' => $password,
+        'role' => 'user'
+    ];
+    $user_id = $database->insert("users", $data);
 
-    // MySQL ma'lumotlar bazasi bilan aloqani o'rnatish
-    $url = "MANZIL";
-    $host = "HOST";
-    $user_d = "USER";
-    $password = "PAROL";
-    $db = "DATA_BASE_NAME";
-    $link = mysqli_connect($host, $user_d, $password, $db);
-    if (!$link) {
-        exit(); // Agar MySQL bilan aloqa o'rnatilmasa, chiqish
-    } else {
-        // Tulovlarni ma'lumotlar bazasiga kiritish
-        $sql = mysqli_query($link, "INSERT INTO tulovlar (user,summa, vaqt, trans_id) VALUES ('$user','$summa', '$vaqt', '$trans_id')");
-        if ($sql == true) {
-            // Agar SQL so'rovi muvaffaqiyatli bo'lsa
-        } else {
-            // Agar SQL so'rovi muvaffaqiyatsiz bo'lsa
-        }
-        $sql = mysqli_query($link, "SELECT * from tulovlar WHERE telefon='$user' order by id desc");
-        $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
-        $log_id = $data['id'];
-    }
+    $data = $database->select('users', '*', "phone = ?", [$phone], "s");
+    $log_id = $data[0]['id'];
 }
 
-// Agar so'rovda xatolik bo'lsa
-if ($request['error'] < 0) {
-    echo json_encode(array(
-        'error' => -6,
-        'error_note' => 'Transaction mavjud emas'
-    ));
+// Natijani JSON formatida qaytarish
+echo json_encode(array(
+    'error' => 0,
+    'error_note' => 'Muvaffaqiyatli',
+    'click_trans_id' => $request['click_trans_id'],
+    'merchant_trans_id' => $request['merchant_trans_id'],
+    'merchant_prepare_id' => $log_id,
+));
 
-    exit;
-} else {
-    // Agar barcha tekshiruvlar muvaffaqiyatli bo'lsa, natijani qaytarish
-    echo json_encode(array(
-        'error' => 0,
-        'error_note' => 'Muvaffaqiyat',
-        'click_trans_id' => $request['click_trans_id'],
-        'merchant_trans_id' => $request['merchant_trans_id'],
-        'merchant_confirm_id' => $log_id,
-    ));
-
-    exit;
-}
+exit;
 ?>
