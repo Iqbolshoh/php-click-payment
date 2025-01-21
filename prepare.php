@@ -71,7 +71,7 @@ if ((int) $request['action'] != 0) {
 }
 
 // merchant_trans_id - This is the merchant_trans_id ID that they entered in the app
-// Check if the merchant_trans_id exists in the users table
+// Check if the merchant_trans_id exists (in your case, there's no users table)
 
 $merchant_trans_id = $request['merchant_trans_id'];
 if (!$merchant_trans_id) {
@@ -81,27 +81,13 @@ if (!$merchant_trans_id) {
     ));
     exit;
 } else {
-    // Retrieve user information from the database using the select() method
-    $user_data = $query->select('users', '*', 'username = ?', [$merchant_trans_id], 's');
-    if (empty($user_data)) {
-        echo json_encode(array(
-            'error' => -5,
-            'error_note' => 'User does not exist in users table'
-        ));
-        exit;
-    }
-    $user_data = $user_data[0];
-
-    $full_name = $user_data['ism'];
-    $username = $user_data['login'];
-    $password = $user_data['parol'];
-
+    // Since there is no 'users' table, we can skip this part and proceed to payment insertion.
     // Insert payment preparation data into the payments table
     $payment_data = [
         'amount' => $request['amount'],
         'time' => date('Y-m-d H:i:s', time()),
         'click_trans_id' => $request['click_trans_id'],
-        'status' => 'unpay'
+        'status' => 'unpay'  // Initial status is 'unpay'
     ];
 
     // Insert into the payments table and get the log_id
