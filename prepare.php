@@ -1,5 +1,7 @@
 <?php
 
+require_once 'config.php';
+
 error_reporting(0);
 header('Content-Type: text/json');
 header('Charset: UTF-8');
@@ -26,14 +28,14 @@ if (
         isset($request['click_paydoc_id'])
     )
 ) {
-
     echo json_encode(array(
         'error' => -8,
-        'error_note' => 'Clickdan sorovda xato mavjud'
+        'error_note' => 'Clickdan so\'rovda xato mavjud'
     ));
-
     exit;
 }
+
+$database = new Database();
 
 // Xeshni tekshirish (so'rovning xavfsizligini tasdiqlash)
 $sign = $request['click_trans_id'] .
@@ -45,6 +47,7 @@ $sign = $request['click_trans_id'] .
     $request['sign_time'];
 
 $sign_string = md5($sign);
+
 // Xeshni tekshirish
 if ($sign_string != $request['sign_string']) {
     echo json_encode(array(
@@ -73,58 +76,38 @@ if (!$user) {
     exit;
 }
 
-include './config.php';
+$user_data = $database->select("users", "*", "phone = ?", [$user], "s");
 
-$db = new Database();
+if (is_array($user_data) && count($user_data) > 0) {
+    $row = $user_data[0];
+    $name = $row['full_name'];
+    $phone = $user;
+    $login = $row['login'];
+    $password = $row['password'];
 
-// Foydalanuvchini vaqtincha jadvaldan tekshirish
-$sql = $db->select("user_temp", "*", "telefon = ?", [$user], "s");
-if (empty($sql)) {
-    echo json_encode(array(
-        'error' => -5,
-        'error_note' => 'Foydalanuvchi vaqtinchalik jadvalda topilmadi'
-    ));
-    exit;
+    // Foydalanuvchining ma'lumotlarini asosiysi jadvalga qo'shish
+    $data = [
+        'full_name' => $name,
+        'login' => $login,
+        'phone' => $phone,
+        'password' => $password,
+        'role' => 'user'
+    ];
+
+    $user_id = $database->insert("users", $data);
+
+    $data = $database->select('users', '*', "phone = ?", [$phone], "s");
+    $log_id = $data[0]['id'];
 }
 
-$row = $sql[0];
-$name = $row['ism'];
-$telefon = $user;
-$login = $row['login'];
-$parol = $row['parol'];
-$faoliyat = $row['faoliyat'];
-$rol = "user";
-
-// Foydalanuvchini asosiy jadvalga qo'shish
-$db->insert("user", [
-    'ism' => $name,
-    'login' => $login,
-    'telefon' => $telefon,
-    'parol' => $parol,
-    'faoliyat' => $faoliyat,
-    'rol' => $rol
-]);
-
-// Yangi foydalanuvchi ma'lumotlarini olish
-$sql = $db->select("user", "*", "telefon = ?", [$telefon], "s");
-if (empty($sql)) {
-    echo json_encode(array(
-        'error' => -5,
-        'error_note' => 'Foydalanuvchi asosiy jadvalda topilmadi'
-    ));
-    exit;
-}
-
-$data = $sql[0];
-$log_id = $data['id'];
-
-// Agar barcha tekshiruvlar muvaffaqiyatli o'tsa, natijani JSON formatida qaytarish
-$myJSON = json_encode(array(
+// Natijani JSON formatida qaytarish
+echo json_encode(array(
     'error' => 0,
     'error_note' => 'Muvaffaqiyatli',
     'click_trans_id' => $request['click_trans_id'],
     'merchant_trans_id' => $request['merchant_trans_id'],
     'merchant_prepare_id' => $log_id,
 ));
-echo $myJSON;
+
 exit;
+?>
