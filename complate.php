@@ -9,13 +9,11 @@ header('Charset: UTF-8');
 
 $request = $_POST;
 
-// Merchant information
 $merchant_id = 'YOUR_MERCHANT_ID';
 $service_id = 'YOUR_SERVICE_ID';
 $merchant_user_id = 'YOUR_MERCHANT_USER_ID';
 $secret_key = 'YOUR_SECRET_KEY';
 
-// Check if all required parameters are present
 if (
     !(isset($request['click_trans_id']) &&
         isset($request['service_id']) &&
@@ -35,7 +33,6 @@ if (
     exit;
 }
 
-// Check hash for data authenticity
 $sign_string = md5(
     $request['click_trans_id'] .
     $request['service_id'] .
@@ -47,7 +44,6 @@ $sign_string = md5(
     $request['sign_time']
 );
 
-// Validate the sign string to check its authenticity
 if ($sign_string != $request['sign_string']) {
     echo json_encode(array(
         'error' => -1,
@@ -56,7 +52,6 @@ if ($sign_string != $request['sign_string']) {
     exit;
 }
 
-// Check if action is valid (action = 1 means successful payment)
 if ((int) $request['action'] != 1) {
     echo json_encode(array(
         'error' => -3,
@@ -65,7 +60,6 @@ if ((int) $request['action'] != 1) {
     exit;
 }
 
-// Check if user ID (merchant_trans_id) is provided
 $user_id = $request['merchant_trans_id'];
 if (!$user_id) {
     echo json_encode(array(
@@ -75,7 +69,6 @@ if (!$user_id) {
     exit;
 }
 
-// Check if merchant_prepare_id exists (if the transaction exists)
 $merchant_prepare_id = $request['merchant_prepare_id'];
 if (!$merchant_prepare_id) {
     echo json_encode(array(
@@ -84,55 +77,21 @@ if (!$merchant_prepare_id) {
     ));
     exit;
 } else {
-    // Get the payment details from the request
     $amount = $request['amount'];
     $time = time();
     $trans_id = $request['click_trans_id'];
 
-    // Check if payment already exists
     $existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
 
     if (!empty($existing_payment)) {
-        // Payment already exists, update status to 'paid'
-        $payment_update = [
-            'status' => 'paid',
-            'time' => date('Y-m-d H:i:s', $time)
-        ];
-
-        // Update the existing payment record
-        $update_result = $query->update('payments', $payment_update, 'click_trans_id = ?', [$trans_id]);
-
-        if (!$update_result) {
-            echo json_encode(array(
-                'error' => -7,
-                'error_note' => 'Failed to update payment status'
-            ));
-            exit;
-        }
-
-    } else {
-        // If payment doesn't exist, insert a new payment record with status 'unpay'
-        $payment_data = [
-            'amount' => $amount,
-            'time' => date('Y-m-d H:i:s', $time),
-            'click_trans_id' => $trans_id,
-            'status' => 'unpay'
-        ];
-
-        // Insert new payment record
-        $log_id = $query->insert('payments', $payment_data);
-
-        if (!$log_id) {
-            echo json_encode(array(
-                'error' => -7,
-                'error_note' => 'Failed to record payment'
-            ));
-            exit;
-        }
+        echo json_encode(array(
+            'error' => -7,
+            'error_note' => 'Payment already exists and is processed'
+        ));
+        exit;
     }
 }
 
-// Check if there was an error (payment was not deducted from the user's card)
 if ($request['error'] < 0) {
     echo json_encode(array(
         'error' => -6,
@@ -140,7 +99,6 @@ if ($request['error'] < 0) {
     ));
     exit;
 } else {
-    // If everything is successful and the payment was deducted from the user's card
     echo json_encode(array(
         'error' => 0,
         'error_note' => 'Success',
