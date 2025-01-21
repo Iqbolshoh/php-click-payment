@@ -76,8 +76,8 @@ if (!$user_id) {
 }
 
 // Check if merchant_prepare_id exists (if the transaction exists)
-$prepared = $request['merchant_prepare_id'];
-if (!$prepared) {
+$merchant_prepare_id = $request['merchant_prepare_id'];
+if (!$merchant_prepare_id) {
     echo json_encode(array(
         'error' => -6,
         'error_note' => 'Transaction does not exist'
@@ -89,22 +89,46 @@ if (!$prepared) {
     $time = time();
     $trans_id = $request['click_trans_id'];
 
-    $payment_data = [
-        'amount' => $amount,
-        'time' => date('Y-m-d H:i:s', $time),
-        'click_trans_id' => $trans_id,
-        'status' => 'unpay'
-    ];
+    // Check if payment already exists
+    $existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
 
-    $log_id = $query->insert('payments', $payment_data);
+    if (!empty($existing_payment)) {
+        // Payment already exists, update status to 'paid'
+        $payment_update = [
+            'status' => 'paid',
+            'time' => date('Y-m-d H:i:s', $time)
+        ];
 
-    // Check if the payment was successfully inserted
-    if (!$log_id) {
-        echo json_encode(array(
-            'error' => -7,
-            'error_note' => 'Failed to record payment'
-        ));
-        exit;
+        // Update the existing payment record
+        $update_result = $query->update('payments', $payment_update, 'click_trans_id = ?', [$trans_id]);
+
+        if (!$update_result) {
+            echo json_encode(array(
+                'error' => -7,
+                'error_note' => 'Failed to update payment status'
+            ));
+            exit;
+        }
+
+    } else {
+        // If payment doesn't exist, insert a new payment record with status 'unpay'
+        $payment_data = [
+            'amount' => $amount,
+            'time' => date('Y-m-d H:i:s', $time),
+            'click_trans_id' => $trans_id,
+            'status' => 'unpay'
+        ];
+
+        // Insert new payment record
+        $log_id = $query->insert('payments', $payment_data);
+
+        if (!$log_id) {
+            echo json_encode(array(
+                'error' => -7,
+                'error_note' => 'Failed to record payment'
+            ));
+            exit;
+        }
     }
 }
 
