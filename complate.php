@@ -9,15 +9,15 @@ header('Charset: UTF-8');
 
 $request = $_POST;
 
+// Merchant information
 $merchant_id = 'SIZNING_MERCHANT_ID';
 $service_id = 'SIZNING_SERVICE_ID';
 $merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
 $secret_key = 'SIZNING_SECRET_KEY';
 
-// Check if all parameters are sent
+// Check if all required parameters are present
 if (
-    !(
-        isset($request['click_trans_id']) &&
+    !(isset($request['click_trans_id']) &&
         isset($request['service_id']) &&
         isset($request['merchant_trans_id']) &&
         isset($request['amount']) &&
@@ -26,17 +26,16 @@ if (
         isset($request['error_note']) &&
         isset($request['sign_time']) &&
         isset($request['sign_string']) &&
-        isset($request['click_paydoc_id'])
-    )
+        isset($request['click_paydoc_id']))
 ) {
     echo json_encode(array(
         'error' => -8,
-        'error_note' => 'Error in request from click'
+        'error_note' => 'Error in request from Click'
     ));
     exit;
 }
 
-// Check hash
+// Check hash for data authenticity
 $sign_string = md5(
     $request['click_trans_id'] .
     $request['service_id'] .
@@ -57,7 +56,7 @@ if ($sign_string != $request['sign_string']) {
     exit;
 }
 
-// Check if action is valid
+// Check if action is valid (action = 1 means successful payment)
 if ((int) $request['action'] != 1) {
     echo json_encode(array(
         'error' => -3,
@@ -66,10 +65,9 @@ if ((int) $request['action'] != 1) {
     exit;
 }
 
-// merchant_trans_id - This is the user ID that they entered in the app
-// Here, we need to check if we have a user with this ID in our database
-$user = $request['merchant_trans_id'];
-if (!$user) {
+// Check if user ID (merchant_trans_id) is provided
+$user_id = $request['merchant_trans_id'];
+if (!$user_id) {
     echo json_encode(array(
         'error' => -5,
         'error_note' => 'User does not exist'
@@ -77,7 +75,7 @@ if (!$user) {
     exit;
 }
 
-// Check if the merchant_prepare_id exists
+// Check if merchant_prepare_id exists (if the transaction exists)
 $prepared = $request['merchant_prepare_id'];
 if (!$prepared) {
     echo json_encode(array(
@@ -86,12 +84,11 @@ if (!$prepared) {
     ));
     exit;
 } else {
-    // Get the amount and transaction details
+    // Get the payment details from the request
     $amount = $request['amount'];
     $time = time();
     $trans_id = $request['click_trans_id'];
 
-    // Insert payment record into the database using the Database class
     $payment_data = [
         'amount' => $amount,
         'time' => date('Y-m-d H:i:s', $time),
@@ -99,11 +96,11 @@ if (!$prepared) {
         'status' => 'unpay'
     ];
 
-    // Insert the payment data into the payments table and get the inserted log_id
+    // Insert the payment data into the payments table
     $log_id = $query->insert('payments', $payment_data);
 
+    // Check if the payment was successfully inserted
     if (!$log_id) {
-        // Failed to insert payment
         echo json_encode(array(
             'error' => -7,
             'error_note' => 'Failed to record payment'
@@ -112,7 +109,7 @@ if (!$prepared) {
     }
 }
 
-// Error: money was not deducted from the user's card
+// Check if there was an error (payment was not deducted from the user's card)
 if ($request['error'] < 0) {
     echo json_encode(array(
         'error' => -6,
@@ -120,7 +117,7 @@ if ($request['error'] < 0) {
     ));
     exit;
 } else {
-    // If everything is successful and money was deducted from the user's card
+    // If everything is successful and the payment was deducted from the user's card
     echo json_encode(array(
         'error' => 0,
         'error_note' => 'Success',
