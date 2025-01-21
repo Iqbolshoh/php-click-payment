@@ -1,9 +1,9 @@
 <?php
-// Database connection constants
+
 define("DB_SERVER", "localhost");
 define("DB_USERNAME", "root");
 define("DB_PASSWORD", "");
-define("DB_NAME", "example_database");
+define("DB_NAME", "click");
 
 class Database
 {
