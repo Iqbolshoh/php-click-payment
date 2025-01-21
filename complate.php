@@ -106,7 +106,7 @@ if (!$merchant_prepare_id) {
             ));
             exit;
         }
-    } 
+    }
 }
 
 if ($error < 0) {
