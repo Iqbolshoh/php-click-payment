@@ -103,28 +103,15 @@ if (!$prepared) {
     // Insert the payment data into the payments table and get the inserted log_id
     $log_id = $query->insert('payments', $payment_data);
 
-    if ($log_id) {
-        // Successfully inserted payment, $log_id contains the new payment's ID
-        echo json_encode(array(
-            'error' => 0,
-            'error_note' => 'Payment successfully recorded',
-            'merchant_trans_id' => $request['merchant_trans_id'],
-            'merchant_prepare_id' => $log_id
-        ));
-    } else {
+    if (!$log_id) {
         // Failed to insert payment
         echo json_encode(array(
             'error' => -7,
             'error_note' => 'Failed to record payment'
         ));
-    }
-    // Retrieve the payment record to get the log_id using the Database class
-    $payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
-    if ($payment) {
-        $log_id = $payment[0]['id'];
+        exit;
     }
 }
-
 
 // Error: money was not deducted from the user's card
 if ($request['error'] < 0) {
@@ -134,7 +121,7 @@ if ($request['error'] < 0) {
     ));
     exit;
 } else {
-    // If everything is successful and money was deducted from the user's card, we save it in the database
+    // If everything is successful and money was deducted from the user's card
     echo json_encode(array(
         'error' => 0,
         'error_note' => 'Success',
