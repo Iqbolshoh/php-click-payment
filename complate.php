@@ -25,9 +25,18 @@ $sign_string_request = $request['sign_string'] ?? null;
 $merchant_prepare_id = $request['merchant_prepare_id'] ?? null;
 
 if (
-    empty($click_trans_id) || empty($service_id_request) || empty($merchant_trans_id) ||
-    empty($amount) || empty($action) || empty($error) || empty($error_note) ||
-    empty($sign_time) || empty($sign_string_request) || empty($merchant_prepare_id)
+    !isset(
+    $click_trans_id,
+    $service_id_request,
+    $merchant_trans_id,
+    $amount,
+    $action,
+    $error,
+    $error_note,
+    $sign_time,
+    $sign_string_request,
+    $merchant_prepare_id
+)
 ) {
     echo json_encode([
         'error' => -8,
@@ -35,6 +44,7 @@ if (
     ]);
     exit;
 }
+
 
 $sign_string = md5(
     $click_trans_id . $service_id_request . $secret_key . $merchant_trans_id .

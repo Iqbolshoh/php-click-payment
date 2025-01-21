@@ -25,13 +25,22 @@ $sign_string_request = $request['sign_string'] ?? null;
 $click_paydoc_id = $request['click_paydoc_id'] ?? null;
 
 if (
-    empty($click_trans_id) || empty($service_id_request) || empty($merchant_trans_id) ||
-    empty($amount) || empty($action) || empty($error) || empty($error_note) ||
-    empty($sign_time) || empty($sign_string_request) || empty($click_paydoc_id)
+    !isset(
+    $click_trans_id,
+    $service_id_request,
+    $merchant_trans_id,
+    $amount,
+    $action,
+    $error,
+    $error_note,
+    $sign_time,
+    $sign_string_request,
+    $click_paydoc_id
+)
 ) {
     echo json_encode([
         'error' => -8,
-        'error_note' => 'Error in request from Click'
+        'error_note' => 'Missing required parameters in the request'
     ]);
     exit;
 }
