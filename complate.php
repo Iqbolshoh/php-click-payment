@@ -76,12 +76,12 @@ if (!$user) {
     exit;
 }
 
-$user_data = $database->select("users", "*", "phone = ?", [$user], "s");
+$user_data = $database->select("users", "*", "username = ?", [$user], "s");
 
 if (is_array($user_data) && count($user_data) > 0) {
     $row = $user_data[0];
     $name = $row['full_name'];
-    $phone = $user;
+    $username = $user;
     $login = $row['login'];
     $password = $row['password'];
 
@@ -89,13 +89,13 @@ if (is_array($user_data) && count($user_data) > 0) {
     $data = [
         'full_name' => $name,
         'login' => $login,
-        'phone' => $phone,
+        'username' => $username,
         'password' => $password,
         'role' => 'user'
     ];
     $user_id = $database->insert("users", $data);
 
-    $data = $database->select('users', '*', "phone = ?", [$phone], "s");
+    $data = $database->select('users', '*', "username = ?", [$username], "s");
     $log_id = $data[0]['id'];
 }
 
