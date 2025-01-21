@@ -84,11 +84,38 @@ if (!$merchant_prepare_id) {
     $existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
 
     if (!empty($existing_payment)) {
-        echo json_encode(array(
-            'error' => -7,
-            'error_note' => 'Payment already exists and is processed'
-        ));
-        exit;
+        $payment_update = [
+            'status' => 'paid',
+            'time' => date('Y-m-d H:i:s', $time)
+        ];
+
+        $update_result = $query->update('payments', $payment_update, 'click_trans_id = ?', [$trans_id]);
+
+        if (!$update_result) {
+            echo json_encode(array(
+                'error' => -7,
+                'error_note' => 'Failed to update payment status'
+            ));
+            exit;
+        }
+
+    } else {
+        $payment_data = [
+            'amount' => $amount,
+            'time' => date('Y-m-d H:i:s', $time),
+            'click_trans_id' => $trans_id,
+            'status' => 'unpay'
+        ];
+
+        $log_id = $query->insert('payments', $payment_data);
+
+        if (!$log_id) {
+            echo json_encode(array(
+                'error' => -7,
+                'error_note' => 'Failed to record payment'
+            ));
+            exit;
+        }
     }
 }
 
@@ -108,4 +135,5 @@ if ($request['error'] < 0) {
     ));
     exit;
 }
+
 ?>
