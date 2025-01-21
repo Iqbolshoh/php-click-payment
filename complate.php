@@ -87,31 +87,44 @@ if (!$prepared) {
     exit;
 } else {
     // Get the amount and transaction details
-    $summa = $request['amount'];
-    $vaqt = time();
+    $amount = $request['amount'];
+    $time = time();
     $trans_id = $request['click_trans_id'];
 
     // Insert payment record into the database using the Database class
     $payment_data = [
         'user_id' => $user,
-        'amount' => $summa,
-        'time' => date('Y-m-d H:i:s', $vaqt),
-        'click_trans_id' => $trans_id
+        'amount' => $amount,
+        'time' => date('Y-m-d H:i:s', $time),
+        'click_trans_id' => $trans_id,
+        'status' => 'unpay' // Set status to 'unpay' by default
     ];
+
+    // Insert the payment data into the payments table and get the inserted log_id
     $log_id = $query->insert('payments', $payment_data);
 
     if ($log_id) {
-        // Successfully inserted payment
+        // Successfully inserted payment, $log_id contains the new payment's ID
+        echo json_encode(array(
+            'error' => 0,
+            'error_note' => 'Payment successfully recorded',
+            'merchant_trans_id' => $request['merchant_trans_id'],
+            'merchant_prepare_id' => $log_id
+        ));
     } else {
         // Failed to insert payment
+        echo json_encode(array(
+            'error' => -7,
+            'error_note' => 'Failed to record payment'
+        ));
     }
-
     // Retrieve the payment record to get the log_id using the Database class
     $payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
     if ($payment) {
         $log_id = $payment[0]['id'];
     }
 }
+
 
 // Error: money was not deducted from the user's card
 if ($request['error'] < 0) {
