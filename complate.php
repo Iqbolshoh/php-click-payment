@@ -11,7 +11,7 @@ $service_id = 'SIZNING_SERVICE_ID';
 $merchant_user_id = 'SIZNING_MERCHANT_USER_ID';
 $secret_key = 'SIZNING_SECRET_KEY';
 
-// Проверка отправлено-ли все параметры
+// Check if all parameters are sent
 if (
     !(
         isset($request['click_trans_id']) &&
@@ -35,7 +35,7 @@ if (
     exit;
 }
 
-// Проверка хеша
+// Check hash
 $sign_string = md5(
     $request['click_trans_id'] .
     $request['service_id'] .
@@ -47,7 +47,7 @@ $sign_string = md5(
     $request['sign_time']
 );
 
-// check sign string to possible
+// Check sign string for validity
 if ($sign_string != $request['sign_string']) {
 
     echo json_encode(array(
@@ -58,6 +58,7 @@ if ($sign_string != $request['sign_string']) {
     exit;
 }
 
+// Check if action is valid
 if ((int) $request['action'] != 1) {
 
     echo json_encode(array(
@@ -68,8 +69,8 @@ if ((int) $request['action'] != 1) {
     exit;
 }
 
-// merchant_trans_id - это ID пользователья который он ввел в приложении
-// Здесь нужно проверить если у нас в базе пользователь с таким ID
+// merchant_trans_id - User's ID entered in the application
+// Check if we have a user in the database with this ID
 
 $user = $request['merchant_trans_id'];
 if (!$user) {
@@ -81,8 +82,7 @@ if (!$user) {
     exit;
 }
 
-//
-
+// Check if the merchant_prepare_id exists
 $prepared = $request['merchant_prepare_id'];
 
 if (!$prepared) {
@@ -105,34 +105,36 @@ if (!$prepared) {
     if (!$link) {
         exit();
     } else {
-        $sql = mysqli_query($link, "INSERT INTO tulovlar (user,summa, vaqt, trans_id) VALUES ('$user','$summa', '$vaqt', '$trans_id')");
+        // Insert payment record into the database
+        $sql = mysqli_query($link, "INSERT INTO tulovlar (user, summa, vaqt, trans_id) VALUES ('$user', '$summa', '$vaqt', '$trans_id')");
         if ($sql == true) {
-            // successful insertion
+            // Successful insertion
         } else {
-            // failed insertion
+            // Insertion failed
         }
+        
+        // Retrieve the payment record to get the log_id
         $sql = mysqli_query($link, "SELECT * from tulovlar WHERE telefon='$telefon' order by id desc");
         $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
         $log_id = $data['id'];
     }
 }
 
-// Если это заказ тогда нужно проверить еще статус заказа, все еще заказ актуален или нет
-// если проверка не проходит то нужно возвращать ошибку -4
+// If it's an order, we need to check the status of the order, if it's still valid or not
+// If the check fails, we need to return error -4
 
-// и еще нужно проверить сумму заказа
-// если не проходит тогда нужно возвращать ошибку -2
+// Also check the order amount
+// If the amount is incorrect, return error -2
 
-// Еще одна проверка статуса заказа, не закрыть или нет
-// если заказ отменен тогда нужно возвращать ошибку - 9
+// Another check on the order status, whether it's closed or not
+// If the order is canceled, return error -9
 
-// Все проверки прошли успешно, тог здесь будем сохранять в базу что подготовка к оплате успешно прошла
-// можно сделать отдельную таблицу чтобы сохранить входящих данных как лог
-// и присвоит на параметр merchant_confirm_id номер лога
+// If all checks pass successfully, we save that the preparation for payment has completed successfully
+// We can create a separate table to save incoming data as a log and assign the merchant_confirm_id the log number
 
-// Ошибка деньги с карты пользователя не списались
+// Error: money was not deducted from the user's card
 if ($request['error'] < 0) {
-    // делаем что нибудь (если заказ отменим заказ, если пополнение тогда добавим запись что пополненние не успешно)
+    // Do something (e.g., cancel the order, or if it's a top-up, mark the top-up as unsuccessful)
     echo json_encode(array(
         'error' => -6,
         'error_note' => 'Transaction does not exist'
@@ -140,7 +142,7 @@ if ($request['error'] < 0) {
 
     exit;
 } else {
-    // Все успешно прошел деньги списаны с карты пользователя тогда записываем в базу (сумма приходит в запросе)
+    // If everything is successful and money was deducted from the user's card, we save it in the database
 
     echo json_encode(array(
         'error' => 0,
