@@ -7,7 +7,7 @@ define("DB_NAME", "click");
 
 class Database
 {
-    private $conn; 
+    private $conn;
 
     public function __construct()
     {

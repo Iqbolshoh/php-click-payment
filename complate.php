@@ -93,14 +93,14 @@ if (!$prepared) {
     $password = "PAROL";
     $db = "DATA_BASE_NAME";
     $link = mysqli_connect($host, $user_d, $password, $db);
-    
+
     if (!$link) {
         exit();
     } else {
         // Insert payment record into the database
         $sql = mysqli_query($link, "INSERT INTO payments (user_id, amount, time, click_trans_id) 
             VALUES ('$user', '$summa', FROM_UNIXTIME($vaqt), '$trans_id')");
-        
+
         if ($sql === true) {
             // Successfully inserted payment
         } else {
