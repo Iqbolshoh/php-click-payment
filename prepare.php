@@ -77,7 +77,7 @@ if (!$user) {
     exit;
 } else {
     // Retrieve temporary user information from the database using the select() method
-    $user_data = $query->select('user_temp', '*', 'telefon = ?', [$user], 's');
+    $user_data = $query->select('users', '*', 'username = ?', [$user], 's');
     if (empty($user_data)) {
         echo json_encode(array(
             'error' => -5,
