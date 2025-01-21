@@ -78,6 +78,8 @@ $trans_id = $click_trans_id;
 
 $existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
 
+$log_id = $existing_payment[0]['id'] ?? null;
+
 if (!empty($existing_payment)) {
     $payment_update = [
         'status' => 'paid',
@@ -107,7 +109,7 @@ if ($error < 0) {
         'error_note' => 'Success',
         'click_trans_id' => $click_trans_id,
         'merchant_trans_id' => $merchant_trans_id,
-        'merchant_confirm_id' => $merchant_prepare_id,
+        'merchant_confirm_id' => $log_id,
     ]);
     exit;
 }
