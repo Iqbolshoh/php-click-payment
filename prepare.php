@@ -28,7 +28,6 @@ if (
         isset($request['sign_string']) &&
         isset($request['click_paydoc_id']))
 ) {
-    // Error in the request from Click
     echo json_encode(array(
         'error' => -8,
         'error_note' => 'Error in request from Click'
@@ -82,12 +81,13 @@ if (!$merchant_trans_id) {
         'amount' => $request['amount'],
         'time' => date('Y-m-d H:i:s', time()),
         'click_trans_id' => $request['click_trans_id'],
-        'status' => 'unpay'  // Initial status is 'unpay'
+        'status' => 'unpay'
     ];
 
     // Insert into the payments table and get the log_id
     $log_id = $query->insert('payments', $payment_data);
 
+    // Check if the payment was successfully inserted
     if (!$log_id) {
         echo json_encode(array(
             'error' => -9,

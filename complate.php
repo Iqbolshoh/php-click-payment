@@ -96,7 +96,6 @@ if (!$prepared) {
         'status' => 'unpay'
     ];
 
-    // Insert the payment data into the payments table
     $log_id = $query->insert('payments', $payment_data);
 
     // Check if the payment was successfully inserted
