@@ -68,7 +68,6 @@ if ((int) $request['action'] != 1) {
 
 // merchant_trans_id - User's ID entered in the application
 // Check if we have a user in the database with this ID
-
 $user = $request['merchant_trans_id'];
 if (!$user) {
     echo json_encode(array(
@@ -80,7 +79,6 @@ if (!$user) {
 
 // Check if the merchant_prepare_id exists
 $prepared = $request['merchant_prepare_id'];
-
 if (!$prepared) {
     echo json_encode(array(
         'error' => -6,
@@ -88,32 +86,30 @@ if (!$prepared) {
     ));
     exit;
 } else {
+    // Get the amount and transaction details
     $summa = $request['amount'];
     $vaqt = time();
     $trans_id = $request['click_trans_id'];
-    $host = "HOST";
-    $user_d = "USER";
-    $password = "PAROL";
-    $db = "DATA_BASE_NAME";
-    $link = mysqli_connect($host, $user_d, $password, $db);
 
-    if (!$link) {
-        exit();
+    // Insert payment record into the database using the Database class
+    $payment_data = [
+        'user_id' => $user,
+        'amount' => $summa,
+        'time' => date('Y-m-d H:i:s', $vaqt),
+        'click_trans_id' => $trans_id
+    ];
+    $log_id = $query->insert('payments', $payment_data);
+
+    if ($log_id) {
+        // Successfully inserted payment
     } else {
-        // Insert payment record into the database
-        $sql = mysqli_query($link, "INSERT INTO payments (user_id, amount, time, click_trans_id) 
-            VALUES ('$user', '$summa', FROM_UNIXTIME($vaqt), '$trans_id')");
+        // Failed to insert payment
+    }
 
-        if ($sql === true) {
-            // Successfully inserted payment
-        } else {
-            // Failed to insert payment
-        }
-
-        // Retrieve the payment record to get the log_id
-        $sql = mysqli_query($link, "SELECT * FROM payments WHERE click_trans_id='$trans_id' ORDER BY id DESC");
-        $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
-        $log_id = $data['id'];
+    // Retrieve the payment record to get the log_id using the Database class
+    $payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
+    if ($payment) {
+        $log_id = $payment[0]['id'];
     }
 }
 
