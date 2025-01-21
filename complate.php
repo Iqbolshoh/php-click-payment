@@ -48,7 +48,7 @@ $sign_string = md5(
     $request['sign_time']
 );
 
-// Check sign string for validity
+// Validate the sign string to check its authenticity
 if ($sign_string != $request['sign_string']) {
     echo json_encode(array(
         'error' => -1,
@@ -66,8 +66,8 @@ if ((int) $request['action'] != 1) {
     exit;
 }
 
-// merchant_trans_id - User's ID entered in the application
-// Check if we have a user in the database with this ID
+// merchant_trans_id - This is the user ID that they entered in the app
+// Here, we need to check if we have a user with this ID in our database
 $user = $request['merchant_trans_id'];
 if (!$user) {
     echo json_encode(array(
