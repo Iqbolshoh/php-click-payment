@@ -65,11 +65,11 @@ if ((int) $request['action'] != 0) {
     exit;
 }
 
-// merchant_trans_id - This is the user ID that they entered in the app
-// Here, we need to check if we have a user with this ID in our database
+// merchant_trans_id - This is the merchant_trans_id ID that they entered in the app
+// Here, we need to check if we have a merchant_trans_id with this ID in our database
 
-$user = $request['merchant_trans_id'];
-if (!$user) {
+$merchant_trans_id = $request['merchant_trans_id'];
+if (!$merchant_trans_id) {
     echo json_encode(array(
         'error' => -5,
         'error_note' => 'User does not exist'
@@ -77,7 +77,7 @@ if (!$user) {
     exit;
 } else {
     // Retrieve temporary user information from the database using the select() method
-    $user_data = $query->select('users', '*', 'username = ?', [$user], 's');
+    $user_data = $query->select('users', '*', 'username = ?', [$merchant_trans_id], 's');
     if (empty($user_data)) {
         echo json_encode(array(
             'error' => -5,
@@ -85,15 +85,15 @@ if (!$user) {
         ));
         exit;
     }
+    $user_data = $user_data[0];
 
-    $name = $user_data[0]['ism'];
-    $login = $user_data[0]['login'];
+    $full_name = $user_data[0]['ism'];
+    $username = $user_data[0]['login'];
     $parol = $user_data[0]['parol'];
 
-    // Insert user information into the 'users' table using the insert() method
     $user_insert_data = [
         'full_name' => $name,
-        'username' => $login,
+        'username' => $username,
         'password' => $parol
     ];
     $log_id = $query->insert('users', $user_insert_data);

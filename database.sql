@@ -15,5 +15,6 @@ CREATE TABLE IF NOT EXISTS payments (
     amount DECIMAL(10, 2) NOT NULL,
     time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     click_trans_id VARCHAR(100) NOT NULL,
+    status ENUM('unpay', 'paid') DEFAULT 'unpay',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
