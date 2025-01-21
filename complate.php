@@ -106,25 +106,7 @@ if (!$merchant_prepare_id) {
             ));
             exit;
         }
-
-    } else {
-        $payment_data = [
-            'amount' => $amount,
-            'time' => date('Y-m-d H:i:s', $time),
-            'click_trans_id' => $trans_id,
-            'status' => 'unpay'
-        ];
-
-        $log_id = $query->insert('payments', $payment_data);
-
-        if (!$log_id) {
-            echo json_encode(array(
-                'error' => -7,
-                'error_note' => 'Failed to record payment'
-            ));
-            exit;
-        }
-    }
+    } 
 }
 
 if ($error < 0) {
