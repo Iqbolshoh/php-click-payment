@@ -76,34 +76,34 @@ if (!$user) {
     ));
     exit;
 } else {
-    $host = "HOST";
-    $user_d = "USER";
-    $password = "PAROL";
-    $db = "DATA_BASE_NAME";
-    $link = mysqli_connect($host, $user_d, $password, $db);
+    // Retrieve temporary user information from the database using the select() method
+    $user_data = $query->select('user_temp', '*', 'telefon = ?', [$user], 's');
+    if (empty($user_data)) {
+        echo json_encode(array(
+            'error' => -5,
+            'error_note' => 'User does not exist in temporary users'
+        ));
+        exit;
+    }
 
-    // Check if the database connection was successful
-    if (!$link) {
-        exit();
-    } else {
-        // Retrieve temporary user information from the database
-        $sql = mysqli_query($link, "SELECT * FROM user_temp WHERE telefon='$user' ORDER BY id DESC");
-        $row = mysqli_fetch_array($sql, MYSQLI_BOTH);
-        $name = $row['ism'];
-        $telefon = $user;
-        $login = $row['login'];
-        $parol = $row['parol'];
-        $faoliyat = $row['faoliyat'];
-        $rol = "user";
+    $name = $user_data[0]['ism'];
+    $login = $user_data[0]['login'];
+    $parol = $user_data[0]['parol'];
 
-        // Insert user information into the 'users' table
-        $sql = mysqli_query($link, "INSERT INTO users (full_name, username, password) 
-            VALUES ('$name', '$login', '$parol')");
+    // Insert user information into the 'users' table using the insert() method
+    $user_insert_data = [
+        'full_name' => $name,
+        'username' => $login,
+        'password' => $parol
+    ];
+    $log_id = $query->insert('users', $user_insert_data);
 
-        // Retrieve the inserted user data to get the user ID (log_id)
-        $sql = mysqli_query($link, "SELECT * FROM users WHERE username='$login' ORDER BY id DESC");
-        $data = mysqli_fetch_array($sql, MYSQLI_BOTH);
-        $log_id = $data['id'];
+    if (!$log_id) {
+        echo json_encode(array(
+            'error' => -9,
+            'error_note' => 'Failed to insert user into the users table'
+        ));
+        exit;
     }
 }
 
