@@ -96,7 +96,7 @@ if (!$prepared) {
         'amount' => $amount,
         'time' => date('Y-m-d H:i:s', $time),
         'click_trans_id' => $trans_id,
-        'status' => 'unpay' // Set status to 'unpay' by default
+        'status' => 'unpay'
     ];
 
     // Insert the payment data into the payments table and get the inserted log_id
