@@ -35,7 +35,7 @@ if (
     exit;
 }
 
-$database = new Database();
+$query = new Database();
 
 // Xeshni tekshirish (so'rovning xavfsizligini tasdiqlash)
 $sign = $request['click_trans_id'] .
@@ -76,7 +76,7 @@ if (!$user) {
     exit;
 }
 
-$user_data = $database->select("users", "*", "username = ?", [$user], "s");
+$user_data = $query->select("users", "*", "username = ?", [$user], "s");
 
 if (is_array($user_data) && count($user_data) > 0) {
     $row = $user_data[0];
@@ -93,9 +93,9 @@ if (is_array($user_data) && count($user_data) > 0) {
         'role' => 'user'
     ];
 
-    $user_id = $database->insert("users", $data);
+    $user_id = $query->insert("users", $data);
 
-    $data = $database->select('users', '*', "username = ?", [$username], "s");
+    $data = $query->select('users', '*', "username = ?", [$username], "s");
     $log_id = $data[0]['id'];
 } else {
     echo json_encode(array(
