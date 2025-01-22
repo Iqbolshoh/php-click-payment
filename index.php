@@ -2,16 +2,18 @@
 error_reporting(0);
 
 include 'config.php';
-$query = new Database();
+$db = new Database();
 
-$transID = date("Ymd_His");
-$transAmount = 1000.00;
+// Define transaction details
+$transactionID = date("Ymd_His");
+$transactionAmount = 1000.00;
 
+// Prepare payment data for integration with the Click payment service
 $paymentData = [
     'service_id' => SERVICE_ID,
     'merchant_id' => MERCHANT_ID,
-    'amount' => $transAmount,
-    'transaction_param' => $transID
+    'amount' => $transactionAmount,
+    'transaction_param' => $transactionID
 ];
 
 $paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentData);
@@ -25,7 +27,7 @@ $paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentDat
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Click Payment</title>
     <style>
-        .click_logo {
+        .payment-button {
             padding: 10px 20px;
             color: #fff;
             font-size: 14px;
@@ -43,21 +45,22 @@ $paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentDat
             text-decoration: none;
         }
 
-        .click_logo i {
+        .payment-button i {
             background: url('https://m.click.uz/static/img/logo.png') no-repeat top left;
             width: 30px;
             height: 25px;
             margin-right: 10px;
         }
 
-        .click_logo:hover {
+        .payment-button:hover {
             background-color: #1c8ed7;
         }
     </style>
 </head>
 
 <body>
-    <a href="<?php echo $paymentUrl; ?>" target="_blank" class="click_logo">
+    <!-- Link to redirect to Click payment page -->
+    <a href="<?php echo $paymentUrl; ?>" target="_blank" class="payment-button">
         <i></i>Pay with CLICK
     </a>
 </body>
