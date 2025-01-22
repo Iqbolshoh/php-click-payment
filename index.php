@@ -39,7 +39,7 @@
 </head>
 
 <body>
-    <a href="./" target="_blank" class="payment-button">
+    <a href="./redirect_payment.php" target="_blank" class="payment-button">
         <i></i>Pay with CLICK
     </a>
 </body>
