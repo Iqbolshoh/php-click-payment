@@ -120,7 +120,7 @@ $payment_update_data = [
     'time' => date('Y-m-d H:i:s')
 ];
 
-$update_result = $db->update('payments', $payment_update_data, 'click_trans_id = ?', [$transaction_id]);
+$update_result = $db->update('payments', $payment_update_data, 'click_trans_id = ?', [$transaction_id], 's');
 
 if (!$update_result) {
     log_message(10, "Failed to update payment status for click_trans_id: $transaction_id");
