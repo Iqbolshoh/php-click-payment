@@ -1,9 +1,15 @@
 <?php
-
-define("DB_SERVER", "localhost");
-define("DB_USERNAME", "root");
-define("DB_PASSWORD", "");
+// Database connection constants
+define("DB_SERVER", "YOUR_DB_SERVER");
+define("DB_USERNAME", "YOUR_DB_USERNAME");
+define("DB_PASSWORD", "YOUR_DB_PASSWORD");
 define("DB_NAME", "payment");
+
+// Click payment integration constants
+define("MERCHANT_ID", "YOUR_MERCHANT_ID");
+define("SERVICE_ID", "YOUR_SERVICE_ID");
+define("MERCHANT_USER_ID", "YOUR_MERCHANT_USER_ID");
+define("SECRET_KEY", "YOUR_SECRET_KEY");
 
 class Database
 {
