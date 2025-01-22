@@ -11,7 +11,7 @@ $payment_data = [
     'service_id' => SERVICE_ID,
     'merchant_id' => MERCHANT_ID,
     'amount' => $payment_amount,
-    'transaction_id' => $transaction_id
+    'transaction_param' => $transaction_id
 ];
 
 $payment_url = 'https://my.click.uz/services/pay?' . http_build_query($payment_data);
