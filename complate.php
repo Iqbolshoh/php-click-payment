@@ -3,7 +3,7 @@ error_reporting(0);
 header('Content-Type: application/json; charset=UTF-8');
 
 include 'config.php';
-$db = new Database();
+$query = new Database();
 
 function log_message($step, $message)
 {
@@ -93,7 +93,7 @@ if (empty($merchant_prepare_id)) {
     exit;
 }
 
-$existing_payment = $db->select('payments', '*', 'click_trans_id = ?', [$transaction_id], 's');
+$existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$transaction_id], 's');
 
 if (empty($existing_payment)) {
     log_message(8, "Transaction does not exist in the database for click_trans_id: $transaction_id");
@@ -120,7 +120,7 @@ $payment_update_data = [
     'time' => date('Y-m-d H:i:s')
 ];
 
-$update_result = $db->update('payments', $payment_update_data, 'click_trans_id = ?', [$transaction_id], 's');
+$update_result = $query->update('payments', $payment_update_data, 'click_trans_id = ?', [$transaction_id], 's');
 
 if (!$update_result) {
     log_message(10, "Failed to update payment status for click_trans_id: $transaction_id");
