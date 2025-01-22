@@ -2,7 +2,7 @@
 error_reporting(0);
 
 include 'config.php';
-$db = new Database();
+$query = new Database();
 
 $transaction_id = date("Ymd_His");
 $payment_amount = 1000.00;
