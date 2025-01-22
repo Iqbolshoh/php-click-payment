@@ -4,17 +4,17 @@ error_reporting(0);
 include 'config.php';
 $db = new Database();
 
-$transactionID = date("Ymd_His");
-$transactionAmount = 1000.00;
+$transaction_id = date("Ymd_His");
+$payment_amount = 1000.00;
 
-$paymentData = [
+$payment_data = [
     'service_id' => SERVICE_ID,
     'merchant_id' => MERCHANT_ID,
-    'amount' => $transactionAmount,
-    'transaction_param' => $transactionID
+    'amount' => $payment_amount,
+    'transaction_id' => $transaction_id
 ];
 
-$paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentData);
+$payment_url = 'https://my.click.uz/services/pay?' . http_build_query($payment_data);
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +23,7 @@ $paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentDat
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://m.click.uz/favicon.ico">
     <title>Click Payment</title>
     <style>
         .payment-button {
@@ -57,7 +58,7 @@ $paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentDat
 </head>
 
 <body>
-    <a href="<?php echo $paymentUrl; ?>" target="_blank" class="payment-button">
+    <a href="<?php echo $payment_url; ?>" target="_blank" class="payment-button">
         <i></i>Pay with CLICK
     </a>
 </body>
