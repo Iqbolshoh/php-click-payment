@@ -3,7 +3,7 @@ error_reporting(0);
 header('Content-Type: application/json; charset=UTF-8');
 
 include 'config.php';
-$db = new Database();
+$query = new Database();
 
 function log_message($step, $message)
 {
@@ -94,7 +94,7 @@ $payment_details = [
     'status' => 'unpay'
 ];
 
-$payment_log_id = $db->insert('payments', $payment_details);
+$payment_log_id = $query->insert('payments', $payment_details);
 
 if (!$payment_log_id) {
     log_message(8, "Failed to insert payment into the payments table.");
