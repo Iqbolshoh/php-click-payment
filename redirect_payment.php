@@ -4,7 +4,7 @@ error_reporting(0);
 include 'config.php';
 $query = new Database();
 
-$transaction_id = date("Ymd_His");
+$transaction_id = "iqbolshoh_777";
 $payment_amount = 1000.00;
 
 $payment_data = [
