@@ -4,11 +4,9 @@ error_reporting(0);
 include 'config.php';
 $db = new Database();
 
-// Define transaction details
 $transactionID = date("Ymd_His");
 $transactionAmount = 1000.00;
 
-// Prepare payment data for integration with the Click payment service
 $paymentData = [
     'service_id' => SERVICE_ID,
     'merchant_id' => MERCHANT_ID,
@@ -59,7 +57,6 @@ $paymentUrl = 'https://my.click.uz/services/pay?' . http_build_query($paymentDat
 </head>
 
 <body>
-    <!-- Link to redirect to Click payment page -->
     <a href="<?php echo $paymentUrl; ?>" target="_blank" class="payment-button">
         <i></i>Pay with CLICK
     </a>
