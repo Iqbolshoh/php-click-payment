@@ -15,4 +15,7 @@ $payment_data = [
 ];
 
 $payment_url = 'https://my.click.uz/services/pay?' . http_build_query($payment_data);
+
+header("Location: $payment_url");
+exit;
 ?>
