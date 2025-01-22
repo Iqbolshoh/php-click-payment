@@ -1,17 +1,19 @@
 <?php
+error_reporting(0);
+header('Content-Type: application/json; charset=UTF-8');
 
 include 'config.php';
 $query = new Database();
 
-error_reporting(0);
-header('Content-Type: application/json; charset=UTF-8');
+function log_message($step, $message)
+{
+    $log_file = 'complete_log.txt';
+    $timestamp = date('Y-m-d H:i:s');
+    $log_message = "[$timestamp] Step $step: $message" . PHP_EOL;
+    file_put_contents($log_file, $log_message, FILE_APPEND);
+}
 
 $request = $_POST;
-
-$merchant_id = 'YOUR_MERCHANT_ID';
-$service_id = 'YOUR_SERVICE_ID';
-$merchant_user_id = 'YOUR_MERCHANT_USER_ID';
-$secret_key = 'YOUR_SECRET_KEY';
 
 $click_trans_id = $request['click_trans_id'] ?? null;
 $service_id_request = $request['service_id'] ?? null;
@@ -23,6 +25,8 @@ $error_note = $request['error_note'] ?? null;
 $sign_time = $request['sign_time'] ?? null;
 $sign_string_request = $request['sign_string'] ?? null;
 $merchant_prepare_id = $request['merchant_prepare_id'] ?? null;
+
+log_message(1, "Received request: " . json_encode($request));
 
 if (
     !isset(
@@ -38,6 +42,7 @@ if (
     $merchant_prepare_id
 )
 ) {
+    log_message(2, "Missing required parameters in the request.");
     echo json_encode([
         'error' => -8,
         'error_note' => 'Error in request from Click'
@@ -45,13 +50,13 @@ if (
     exit;
 }
 
-
 $sign_string = md5(
-    $click_trans_id . $service_id_request . $secret_key . $merchant_trans_id .
+    $click_trans_id . $service_id_request . SECRET_KEY . $merchant_trans_id .
     $merchant_prepare_id . $amount . $action . $sign_time
 );
 
 if ($sign_string !== $sign_string_request) {
+    log_message(3, "SIGN CHECK FAILED! Expected: $sign_string, Received: $sign_string_request");
     echo json_encode([
         'error' => -1,
         'error_note' => 'SIGN CHECK FAILED!'
@@ -59,7 +64,10 @@ if ($sign_string !== $sign_string_request) {
     exit;
 }
 
+log_message(4, "Signature validation passed.");
+
 if ((int) $action !== 1) {
+    log_message(5, "Invalid action. Action received: $action");
     echo json_encode([
         'error' => -3,
         'error_note' => 'Invalid action'
@@ -68,6 +76,7 @@ if ((int) $action !== 1) {
 }
 
 if (empty($merchant_trans_id)) {
+    log_message(6, "Merchant transaction ID is missing.");
     echo json_encode([
         'error' => -5,
         'error_note' => 'User does not exist'
@@ -76,6 +85,7 @@ if (empty($merchant_trans_id)) {
 }
 
 if (empty($merchant_prepare_id)) {
+    log_message(7, "Merchant prepare ID is missing.");
     echo json_encode([
         'error' => -6,
         'error_note' => 'Transaction does not exist'
@@ -83,45 +93,55 @@ if (empty($merchant_prepare_id)) {
     exit;
 }
 
-$time = time();
-$trans_id = $click_trans_id;
+$existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$click_trans_id], 's');
 
-$existing_payment = $query->select('payments', '*', 'click_trans_id = ?', [$trans_id], 's');
-
-$log_id = $existing_payment[0]['id'] ?? null;
-
-if (!empty($existing_payment)) {
-    $payment_update = [
-        'status' => 'paid',
-        'time' => date('Y-m-d H:i:s', $time)
-    ];
-
-    $update_result = $query->update('payments', $payment_update, 'click_trans_id = ?', [$trans_id]);
-
-    if (!$update_result) {
-        echo json_encode([
-            'error' => -7,
-            'error_note' => 'Failed to update payment status'
-        ]);
-        exit;
-    }
-}
-
-if ($error < 0) {
+if (empty($existing_payment)) {
+    log_message(8, "Transaction does not exist in the database for click_trans_id: $click_trans_id");
     echo json_encode([
         'error' => -6,
         'error_note' => 'Transaction does not exist'
     ]);
     exit;
-} else {
+}
+
+$log_id = $existing_payment[0]['id'];
+
+if ($existing_payment[0]['status'] === 'paid') {
+    log_message(9, "Payment already completed for click_trans_id: $click_trans_id");
     echo json_encode([
-        'error' => 0,
-        'error_note' => 'Success',
-        'click_trans_id' => $click_trans_id,
-        'merchant_trans_id' => $merchant_trans_id,
-        'merchant_confirm_id' => $log_id,
+        'error' => -7,
+        'error_note' => 'Payment already completed'
     ]);
     exit;
 }
 
+$payment_update = [
+    'status' => 'paid',
+    'time' => date('Y-m-d H:i:s')
+];
+
+$update_result = $query->update('payments', $payment_update, 'click_trans_id = ?', [$click_trans_id]);
+
+if (!$update_result) {
+    log_message(10, "Failed to update payment status for click_trans_id: $click_trans_id");
+    echo json_encode([
+        'error' => -7,
+        'error_note' => 'Failed to update payment status'
+    ]);
+    exit;
+}
+
+log_message(11, "Payment status updated successfully for click_trans_id: $click_trans_id");
+
+$response = [
+    'error' => 0,
+    'error_note' => 'Success',
+    'click_trans_id' => $click_trans_id,
+    'merchant_trans_id' => $merchant_trans_id,
+    'merchant_confirm_id' => $log_id,
+];
+
+log_message(12, "Response sent: " . json_encode($response));
+echo json_encode($response);
+exit;
 ?>
