@@ -3,7 +3,7 @@ error_reporting(0);
 header('Content-Type: application/json; charset=UTF-8');
 
 include 'config.php';
-$query = new Database();
+$db = new Database();
 
 function log_message($step, $message)
 {
@@ -13,33 +13,33 @@ function log_message($step, $message)
     file_put_contents($log_file, $log_message, FILE_APPEND);
 }
 
-$request = $_POST;
+$request_data = $_POST;
 
-$click_trans_id = $request['click_trans_id'] ?? null;
-$service_id_request = $request['service_id'] ?? null;
-$merchant_trans_id = $request['merchant_trans_id'] ?? null;
-$amount = $request['amount'] ?? null;
-$action = $request['action'] ?? null;
-$error = $request['error'] ?? null;
-$error_note = $request['error_note'] ?? null;
-$sign_time = $request['sign_time'] ?? null;
-$sign_string_request = $request['sign_string'] ?? null;
-$click_paydoc_id = $request['click_paydoc_id'] ?? null;
+$transaction_id = $request_data['click_trans_id'] ?? null;
+$service_id_received = $request_data['service_id'] ?? null;
+$merchant_transaction_id = $request_data['merchant_trans_id'] ?? null;
+$payment_amount = $request_data['amount'] ?? null;
+$transaction_action = $request_data['action'] ?? null;
+$error_code = $request_data['error'] ?? null;
+$error_message = $request_data['error_note'] ?? null;
+$timestamp = $request_data['sign_time'] ?? null;
+$received_sign_string = $request_data['sign_string'] ?? null;
+$payment_doc_id = $request_data['click_paydoc_id'] ?? null;
 
-log_message(1, "Received request with parameters: " . json_encode($request));
+log_message(1, "Received request with parameters: " . json_encode($request_data));
 
 if (
     !isset(
-    $click_trans_id,
-    $service_id_request,
-    $merchant_trans_id,
-    $amount,
-    $action,
-    $error,
-    $error_note,
-    $sign_time,
-    $sign_string_request,
-    $click_paydoc_id
+    $transaction_id,
+    $service_id_received,
+    $merchant_transaction_id,
+    $payment_amount,
+    $transaction_action,
+    $error_code,
+    $error_message,
+    $timestamp,
+    $received_sign_string,
+    $payment_doc_id
 )
 ) {
     log_message(2, "Missing required parameters in the request.");
@@ -50,13 +50,13 @@ if (
     exit;
 }
 
-$sign_string = md5(
-    $click_trans_id . $service_id_request . SECRET_KEY . $merchant_trans_id .
-    $amount . $action . $sign_time
+$generated_sign_string = md5(
+    $transaction_id . $service_id_received . SECRET_KEY . $merchant_transaction_id .
+    $payment_amount . $transaction_action . $timestamp
 );
 
-if ($sign_string !== $sign_string_request) {
-    log_message(3, "SIGN CHECK FAILED! Expected: $sign_string, Received: $sign_string_request");
+if ($generated_sign_string !== $received_sign_string) {
+    log_message(3, "SIGN CHECK FAILED! Expected: $generated_sign_string, Received: $received_sign_string");
     echo json_encode([
         'error' => -1,
         'error_note' => 'SIGN CHECK FAILED!'
@@ -66,8 +66,8 @@ if ($sign_string !== $sign_string_request) {
 
 log_message(4, "Signature validation passed.");
 
-if ((int) $action !== 0) {
-    log_message(5, "Invalid action. Action received: $action");
+if ((int) $transaction_action !== 0) {
+    log_message(5, "Invalid action. Action received: $transaction_action");
     echo json_encode([
         'error' => -3,
         'error_note' => 'Invalid action'
@@ -75,7 +75,7 @@ if ((int) $action !== 0) {
     exit;
 }
 
-if (empty($merchant_trans_id)) {
+if (empty($merchant_transaction_id)) {
     log_message(6, "Merchant transaction ID is missing.");
     echo json_encode([
         'error' => -5,
@@ -86,17 +86,17 @@ if (empty($merchant_trans_id)) {
 
 log_message(7, "Merchant transaction ID validation passed.");
 
-$payment_data = [
-    'amount' => $amount,
+$payment_details = [
+    'amount' => $payment_amount,
     'time' => date('Y-m-d H:i:s'),
-    'click_trans_id' => $click_trans_id,
-    'merchant_trans_id' => $merchant_trans_id,
+    'click_trans_id' => $transaction_id,
+    'merchant_trans_id' => $merchant_transaction_id,
     'status' => 'unpay'
 ];
 
-$log_id = $query->insert('payments', $payment_data);
+$payment_log_id = $db->insert('payments', $payment_details);
 
-if (!$log_id) {
+if (!$payment_log_id) {
     log_message(8, "Failed to insert payment into the payments table.");
     echo json_encode([
         'error' => -9,
@@ -105,14 +105,14 @@ if (!$log_id) {
     exit;
 }
 
-log_message(9, "Payment inserted successfully with log ID: $log_id.");
+log_message(9, "Payment inserted successfully with log ID: $payment_log_id.");
 
 echo json_encode([
     'error' => 0,
     'error_note' => 'Success',
-    'click_trans_id' => $click_trans_id,
-    'merchant_trans_id' => $merchant_trans_id,
-    'merchant_prepare_id' => $log_id,
+    'click_trans_id' => $transaction_id,
+    'merchant_trans_id' => $merchant_transaction_id,
+    'merchant_prepare_id' => $payment_log_id,
 ]);
 
 log_message(10, "Response sent successfully.");
