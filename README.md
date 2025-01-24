@@ -2,16 +2,6 @@
 
 This repository contains a simple and efficient implementation for handling payments using the Click payment system. The project is designed for integration into web-based applications and includes essential files for configuration and operation.
 
-## Project Structure
-
-- **README.md**: Documentation file providing an overview of the project.
-- **complete.php**: Script to handle payment completion logic.
-- **config.php**: Configuration file for setting up essential parameters such as API credentials and payment settings.
-- **database.sql**: SQL file for setting up the database structure required for the project.
-- **index.php**: Main entry point for the application, typically serves the user interface.
-- **prepare.php**: Script to handle initial payment preparation logic.
-- **redirect_payment.php**: Script to manage payment redirection and responses.
-
 ## Interaction Description
 
 Interaction with the system is performed via the API interface on the provider’s server. The API interface must fully comply with the specifications outlined below. Payments created in the CLICK system are transmitted over HTTP (HTTPS) via POST requests. The supplier must provide CLICK URL addresses to the system for API communication.
@@ -21,7 +11,9 @@ Interaction consists of two stages:
 1. **Prepare**
 2. **Complete**
 
-### Stage 1: Prepare (Action = 0)
+ ---
+
+## Stage 1: Prepare (Action = 0)
 
 **Request Parameters:**
 
@@ -50,7 +42,9 @@ Interaction consists of two stages:
 
 The supplier verifies the payment options (merchant_trans_id, amount) to ensure validity and capability to provide the service or product.
 
-### Stage 2: Complete (Action = 1)
+---
+
+## Stage 2: Complete (Action = 1)
 
 **Request Parameters:**
 
@@ -77,6 +71,8 @@ The supplier verifies the payment options (merchant_trans_id, amount) to ensure 
 | 3  | merchant_confirm_id   | int        | Transaction ID to complete the payment in the billing system. May be NULL.                   |
 | 4  | error                 | int        | Status code about completion of payment. 0 for success, error code otherwise.               |
 | 5  | error_note            | varchar    | Description of the status code.                                                              |
+
+---
 
 ## Database Structure
 
