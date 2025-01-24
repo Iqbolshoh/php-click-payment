@@ -1,3 +1,11 @@
+
+## Technologies Used
+<div style="display: flex; flex-wrap: wrap; gap: 5px;">
+    <img src="https://img.shields.io/badge/PHP-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+    <img src="https://img.shields.io/badge/MySQL-%234479A1.svg?style=for-the-badge&logo=mysql&logoColor=white"
+        alt="MySQL">
+</div>
+
 ## Contributing
 
 Contributions are welcome! If you have suggestions or want to enhance the project, feel free to fork the repository and
