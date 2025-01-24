@@ -2,6 +2,8 @@
 
 This repository contains a simple and efficient implementation for handling payments using the Click payment system. The project is designed for integration into web-based applications and includes essential files for configuration and operation.
 
+![Payment Workflow](images/payment.png)
+
 ## Interaction Description
 
 Interaction with the system is performed via the API interface on the provider’s server. The API interface must fully comply with the specifications outlined below. Payments created in the CLICK system are transmitted over HTTP (HTTPS) via POST requests. The supplier must provide CLICK URL addresses to the system for API communication.
