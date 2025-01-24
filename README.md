@@ -89,21 +89,15 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 ```
 
+This structure can be modified to suit your application's specific requirements. Ensure all payments are properly recorded in this table to track transactions.
+
+---
+
 ## Features
 
 - Secure integration with Click payment.
 - Simple database setup and configuration.
 - Modular scripts for preparation, redirection, and completion.
-
-
-
-
-
-
-
-
-
-
 
 ## Technologies Used
 <div style="display: flex; flex-wrap: wrap; gap: 5px;">
