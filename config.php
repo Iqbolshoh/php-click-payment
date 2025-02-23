@@ -1,15 +1,21 @@
 <?php
-// Database connection constants
-define("DB_SERVER", "localhost");
-define("DB_USERNAME", "root");
-define("DB_PASSWORD", "");
-define("DB_NAME", "click_payment");
+// ==============================
+// 📊 DATABASE CONFIGURATION
+// ==============================
 
-// Click payment integration constants
-define("MERCHANT_ID", "YOUR_MERCHANT_ID");
-define("SERVICE_ID", "YOUR_SERVICE_ID");
-define("MERCHANT_USER_ID", "YOUR_MERCHANT_USER_ID");
-define("SECRET_KEY", "YOUR_SECRET_KEY");
+define("DB_SERVER", "YOUR_DB_SERVER");                  // 🌐 Database host (e.g., 'localhost' or '127.0.0.1')
+define("DB_USERNAME", "YOUR_DB_USERNAME");              // 👤 Database username (e.g., 'root')
+define("DB_PASSWORD", "YOUR_DB_PASSWORD");              // 🔒 Database password (use a strong password)
+define("DB_NAME", "click_payment");                     // 💾 Database name for storing payment data
+
+// ==============================
+// 💸 CLICK PAYMENT INTEGRATION
+// ==============================
+
+define("MERCHANT_ID", "YOUR_MERCHANT_ID");              // 🏷️ Unique Merchant ID provided by Click
+define("SERVICE_ID", "YOUR_SERVICE_ID");                // 💡 Service ID for your specific product/service
+define("MERCHANT_USER_ID", "YOUR_MERCHANT_USER_ID");    // 👥 Merchant User ID assigned by Click
+define("SECRET_KEY", "YOUR_SECRET_KEY");                // 🛡️ Secret key for API authentication (KEEP IT SAFE!)
 
 define("SITE_PATH", $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST']);
 date_default_timezone_set('Etc/GMT-5');
