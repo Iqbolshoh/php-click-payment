@@ -88,10 +88,10 @@ log_message(7, "Merchant transaction ID validation passed.");
 
 $payment_details = [
     'amount' => $payment_amount,
-    'time' => date('Y-m-d H:i:s'),
-    'click_trans_id' => $transaction_id,
-    'merchant_trans_id' => $merchant_transaction_id,
-    'status' => 'unpay'
+    'api_trans_id' => $transaction_id,
+    'system_trans_id' => $merchant_transaction_id,
+    'status' => 'unpay',
+    'date' => date('Y-m-d H:i:s')
 ];
 
 $payment_log_id = $query->insert('payments', $payment_details);
