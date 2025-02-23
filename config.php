@@ -3,7 +3,7 @@
 define("DB_SERVER", "localhost");
 define("DB_USERNAME", "root");
 define("DB_PASSWORD", "");
-define("DB_NAME", "payment");
+define("DB_NAME", "click_payment");
 
 // Click payment integration constants
 define("MERCHANT_ID", "YOUR_MERCHANT_ID");
