@@ -1,8 +1,8 @@
 <?php
 // Database connection constants
-define("DB_SERVER", "YOUR_DB_SERVER");
-define("DB_USERNAME", "YOUR_DB_USERNAME");
-define("DB_PASSWORD", "YOUR_DB_PASSWORD");
+define("DB_SERVER", "localhost");
+define("DB_USERNAME", "root");
+define("DB_PASSWORD", "");
 define("DB_NAME", "payment");
 
 // Click payment integration constants

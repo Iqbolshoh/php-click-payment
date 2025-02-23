@@ -6,13 +6,11 @@ This repository contains a simple and efficient implementation for handling paym
 
 ## 📂 Project Structure
 
-- **📄 README.md**: Documentation file providing an overview of the project.
 - **💻 complete.php**: Script to handle payment completion logic.
 - **⚙️ config.php**: Configuration file for payment information and database connection.
 - **🗄️ database.sql**: SQL file for setting up the database structure required for the project.
-- **🌐 index.php**: Provides the user with a button to make a payment with the CLICK payment system.
+- **🌐 index.php**: When the user clicks the button, CLICK will redirect to the payment page
 - **🛠️ prepare.php**: Script to handle initial payment preparation logic.
-- **🔄 redirect_payment.php**: To be redirected to the payment page.
 
 ## Interaction Description
 
