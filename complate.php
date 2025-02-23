@@ -104,7 +104,7 @@ if (empty($existing_payment)) {
     exit;
 }
 
-$payment_log_id = $existing_payment[0]['id'];
+$merchant_confirm_id = $existing_payment[0]['id'];
 
 if ($existing_payment[0]['status'] === 'paid') {
     log_message(9, "Payment already completed for click_trans_id: $transaction_id");
@@ -138,7 +138,7 @@ $response_data = [
     'error_note' => 'Success',
     'click_trans_id' => $transaction_id,
     'merchant_trans_id' => $merchant_transaction_id,
-    'merchant_confirm_id' => $payment_log_id,
+    'merchant_confirm_id' => $merchant_confirm_id,
 ];
 
 log_message(12, "Response sent: " . json_encode($response_data));
