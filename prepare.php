@@ -90,6 +90,7 @@ $payment_details = [
     'amount' => $payment_amount,
     'api_trans_id' => $transaction_id,
     'system_trans_id' => $merchant_transaction_id,
+    'method' => 'click',
     'status' => 'unpay',
     'date' => date('Y-m-d H:i:s')
 ];
