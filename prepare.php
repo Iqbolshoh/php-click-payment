@@ -95,9 +95,9 @@ $payment_details = [
     'date' => date('Y-m-d H:i:s')
 ];
 
-$payment_log_id = $query->insert('payments', $payment_details);
+$merchant_prepare_id = $query->insert('payments', $payment_details);
 
-if (!$payment_log_id) {
+if (!$merchant_prepare_id) {
     log_message(8, "Failed to insert payment into the payments table.");
     echo json_encode([
         'error' => -9,
@@ -106,14 +106,14 @@ if (!$payment_log_id) {
     exit;
 }
 
-log_message(9, "Payment inserted successfully with log ID: $payment_log_id.");
+log_message(9, "Payment inserted successfully with log ID: $merchant_prepare_id.");
 
 echo json_encode([
     'error' => 0,
     'error_note' => 'Success',
     'click_trans_id' => $transaction_id,
     'merchant_trans_id' => $merchant_transaction_id,
-    'merchant_prepare_id' => $payment_log_id,
+    'merchant_prepare_id' => $merchant_prepare_id,
 ]);
 
 log_message(10, "Response sent successfully.");
