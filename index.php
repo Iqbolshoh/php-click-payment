@@ -4,7 +4,7 @@ error_reporting(0);
 include './config.php';
 $query = new Database();
 
-$transaction_id = "iqbolshoh_777";
+$transaction_id = uniqid('Iqbolshoh_');
 $payment_amount = 1000.00;
 
 if (isset($_POST['submit'])) {
