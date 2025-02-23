@@ -11,6 +11,9 @@ define("SERVICE_ID", "YOUR_SERVICE_ID");
 define("MERCHANT_USER_ID", "YOUR_MERCHANT_USER_ID");
 define("SECRET_KEY", "YOUR_SECRET_KEY");
 
+define("SITE_PATH", $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST']);
+date_default_timezone_set('Etc/GMT-5');
+
 class Database
 {
     private $conn;
@@ -50,7 +53,7 @@ class Database
         return $result;
     }
 
-    public function validate($value)
+    function validate($value)
     {
         return htmlspecialchars(trim(stripslashes($value)), ENT_QUOTES, 'UTF-8');
     }
@@ -108,5 +111,23 @@ class Database
         }
 
         return $this->conn->affected_rows;
+    }
+
+    public function hashPassword($password)
+    {
+        return hash_hmac('sha256', $password, 'iqbolshoh');
+    }
+
+    public function checkUserSession($role)
+    {
+        if (($_SESSION['loggedin'] ?? false) !== true || ($_SESSION['role'] ?? '') !== $role) {
+            header("Location: " . SITE_PATH . "/login/");
+            exit;
+        }
+
+        if (!$this->select('active_sessions', '*', 'session_token = ?', [session_id()], 's')) {
+            header("Location: " . SITE_PATH . "/logout/");
+            exit;
+        }
     }
 }
