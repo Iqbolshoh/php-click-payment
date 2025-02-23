@@ -13,7 +13,7 @@ define("DB_NAME", "click_payment");                     // 💾 Database name fo
 // ==============================
 
 define("MERCHANT_ID", "YOUR_MERCHANT_ID");              // 🏷️ Unique Merchant ID provided by Click
-define("SERVICE_ID", "YOUR_SERVICE_ID");                // 💡 Service ID for your specific product/service
+define("SERVICE_ID", "YOUR_SERVICE_ID");                // 💡 Service ID for your specific /service
 define("MERCHANT_USER_ID", "YOUR_MERCHANT_USER_ID");    // 👥 Merchant User ID assigned by Click
 define("SECRET_KEY", "YOUR_SECRET_KEY");                // 🛡️ Secret key for API authentication (KEEP IT SAFE!)
 
