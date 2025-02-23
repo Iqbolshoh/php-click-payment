@@ -2,7 +2,7 @@
 error_reporting(0);
 header('Content-Type: application/json; charset=UTF-8');
 
-include 'config.php';
+include './config.php';
 $query = new Database();
 
 function log_message($step, $message)

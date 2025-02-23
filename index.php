@@ -1,7 +1,7 @@
 <?php
 error_reporting(0);
 
-include 'config.php';
+include './config.php';
 $query = new Database();
 
 $transaction_id = "iqbolshoh_777";
