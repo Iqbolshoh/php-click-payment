@@ -1,4 +1,4 @@
-# 💳 PHP-Click-Payment 🚀
+# 💳 PHP-Click-Payment
 
 This repository contains a **simple and efficient** implementation for handling payments using the **Click payment system**. The project is designed for **seamless integration** into web-based applications and includes **essential files** for configuration and operation. 🎯💻
 
