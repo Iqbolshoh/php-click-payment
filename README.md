@@ -16,7 +16,7 @@ This repository contains a **simple and efficient** implementation for handling 
 
 ---
 
-## 🔄 Interaction Description 🔄
+## 🔄 Interaction Description
 
 Interaction with the system is performed via the **API interface** on the provider’s server. The API interface must fully comply with the specifications outlined below. Payments created in the **CLICK** system are transmitted over **HTTP (HTTPS) via POST requests**. 🌍🔒
 
@@ -88,7 +88,7 @@ Interaction consists of **two stages**:
 
 ---
 
-## 📜 Database Structure 🗄️
+## 📜 Database Structure
 
 ```sql
 CREATE DATABASE IF NOT EXISTS payment;
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS payments (
 
 ---
 
-## 🔧 Basic Parameters 🛠️
+## 🔧 Basic Parameters
 
 ```php
 <?php
@@ -125,7 +125,7 @@ define("SECRET_KEY", "YOUR_SECRET_KEY");
 
 ---
 
-## 🚀 Features 🏆
+## 🚀 Features
 
 ✅ **Secure** integration with **Click payment** 🔒
 ✅ Simple **database setup** and **configuration** 🗄️
@@ -133,7 +133,7 @@ define("SECRET_KEY", "YOUR_SECRET_KEY");
 
 ---
 
-## 🖥 Technologies Used 📌
+## 🖥 Technologies Used
 
 ![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS](https://img.shields.io/badge/CSS-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
