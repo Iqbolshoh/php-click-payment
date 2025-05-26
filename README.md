@@ -140,8 +140,6 @@ define("SECRET_KEY", "YOUR_SECRET_KEY");
 ![PHP](https://img.shields.io/badge/PHP-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-%234479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
 
----
-
 ## 📜 License
 This project is open-source and available under the **MIT License**.
 
@@ -185,7 +183,7 @@ This project is open-source and available under the **MIT License**.
         </a>
       </td>
       <td>
-        <a href="https://wa.me/qr/22PVFQSMQQX4F1" target="_blank">
+        <a href="https://wa.me/998997799333" target="_blank">
           <img src="https://github.com/gayanvoice/github-active-users-monitor/blob/master/public/images/icons/whatsapp.svg"
                height="40" width="40" alt="WhatsApp" title="WhatsApp" />
         </a>
