@@ -6,13 +6,13 @@ This repository contains a **simple and efficient** implementation for handling 
 
 ---
 
-## 📂 Project Structure 🏗️
+## 📂 Project Structure
 
-- **💰 complete.php**: Script to handle **payment completion** logic. ✅
-- **⚙️ config.php**: Configuration file for **payment information** and **database connection**. 🔑
-- **🗄️ database.sql**: SQL file to **set up the database structure** required for the project. 📊
-- **🌐 index.php**: When the user clicks the button, **CLICK** will redirect to the **payment page**. 💳
-- **🛠️ prepare.php**: Script to handle **initial payment preparation logic**. ⚡
+- **💰 complete.php**: Script to handle **payment completion** logic.
+- **⚙️ config.php**: Configuration file for **payment information** and **database connection**.
+- **🗄️ database.sql**: SQL file to **set up the database structure** required for the project.
+- **🌐 index.php**: When the user clicks the button, **CLICK** will redirect to the **payment page**.
+- **🛠️ prepare.php**: Script to handle **initial payment preparation logic**. 
 
 ---
 
@@ -135,8 +135,8 @@ define("SECRET_KEY", "YOUR_SECRET_KEY");
 
 ## 🖥 Technologies Used 📌
 
-![HTML](https://img.shields.io/badge/HTML5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-![CSS](https://img.shields.io/badge/CSS3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-%234479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
 
